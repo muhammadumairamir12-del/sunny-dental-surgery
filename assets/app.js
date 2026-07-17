@@ -1,13 +1,6 @@
 /**
  * SUNNY DENTAL SURGERY — app.js
  * Core Application Logic: Navigation, Transitions, Animations, Interactions
- * 
- * MOBILE NAVIGATION IMPROVEMENTS:
- * - Smooth drawer animation with proper UX
- * - Auto-close menu after navigation
- * - Proper history state management
- * - Active link highlighting
- * - Background scroll lock when menu is open
  */
 
 (function () {
@@ -19,19 +12,24 @@
      Browser back/forward buttons work natively (actual URL changes).
   ================================================================ */
 
-  const overlay = document.getElementById('page-overlay');
+  // overlay may not exist yet at parse time; grab lazily when needed
+  function getOverlay() { return document.getElementById('page-overlay'); }
 
   /* ── HISTORY STATE FOR MOBILE BACK BUTTON ── */
   (function setupHistoryRouting() {
     const isHome = document.body.dataset.page === 'home';
+    // Check if the user landed directly on a deep page from outside
     const isFreshSession = !document.referrer || !document.referrer.includes(window.location.host);
 
     if (!isHome && isFreshSession) {
       try {
         const currentUrl = window.location.href;
+        // Replace current state (sub-page) with Home page
         window.history.replaceState({ page: 'home' }, '', 'index.html');
+        // Push the sub-page onto the stack
         window.history.pushState({ page: 'sub' }, '', currentUrl);
 
+        // When back button is pressed, it popstates to Home state
         window.addEventListener('popstate', function (e) {
           if (e.state && e.state.page === 'home') {
             window.location.href = 'index.html';
@@ -43,11 +41,13 @@
     }
   })();
 
+
   /**
    * Navigate to a page with a smooth fade transition.
    * We intercept internal link clicks, animate out, then change location.
    */
   function navigateTo(href) {
+    const overlay = getOverlay();
     if (!overlay) { location.href = href; return; }
     overlay.classList.add('active');
     setTimeout(() => { location.href = href; }, 320);
@@ -80,154 +80,119 @@
 
   // Page enter animation on load
   window.addEventListener('pageshow', function (e) {
+    const overlay = getOverlay();
     if (e.persisted && overlay) {
       overlay.classList.remove('active');
     }
     document.body.classList.add('page-enter');
   });
 
-  // Remove overlay when page is visible
-  if (overlay) {
-    window.addEventListener('DOMContentLoaded', () => {
+  // Remove overlay on new page load
+  document.addEventListener('DOMContentLoaded', () => {
+    const overlay = getOverlay();
+    if (overlay) {
       requestAnimationFrame(() => {
         overlay.style.opacity = '0';
         overlay.style.pointerEvents = 'none';
       });
-    });
-  }
+    }
+  });
 
 
   /* ================================================================
-     2. NAVIGATION - MOBILE DRAWER WITH PROFESSIONAL UX
+     2. NAVIGATION
+     All DOM queries run inside DOMContentLoaded so that nav-footer.js
+     has already injected the hamburger / drawer HTML before we wire up
+     event listeners.
   ================================================================ */
 
-  const nav = document.getElementById('mainNav');
-  const hamburger = document.getElementById('hamburger');
-  const mobileDrawer = document.getElementById('mobileDrawer');
-  const drawerBackdrop = mobileDrawer?.querySelector('.drawer-backdrop');
-  const drawerClose = document.getElementById('drawerClose');
-  const drawerPanel = mobileDrawer?.querySelector('.drawer-panel');
-
-  // Mobile drawer state
-  let isDrawerOpen = false;
-
-  // ── HAMBURGER + MOBILE DRAWER FUNCTIONS ──
+  // Shared drawer helpers — defined in outer scope so navigateTo() can call closeMobileDrawer()
   function openMobileDrawer() {
-    if (isDrawerOpen) return;
-    
-    isDrawerOpen = true;
-    mobileDrawer?.classList.add('open');
+    const hamburger    = document.getElementById('hamburger');
+    const mobileDrawer = document.getElementById('mobileDrawer');
+    if (!mobileDrawer) return;
+    mobileDrawer.classList.add('open');
     hamburger?.classList.add('open');
     hamburger?.setAttribute('aria-expanded', 'true');
-    
-    // Prevent body scroll
     document.body.style.overflow = 'hidden';
-    document.body.style.position = 'fixed';
-    document.body.style.width = '100%';
-    
-    // Trigger animation
-    requestAnimationFrame(() => {
-      drawerPanel?.classList.add('visible');
-    });
   }
 
   function closeMobileDrawer() {
-    if (!isDrawerOpen) return;
-    
-    isDrawerOpen = false;
-    mobileDrawer?.classList.remove('open');
+    const hamburger    = document.getElementById('hamburger');
+    const mobileDrawer = document.getElementById('mobileDrawer');
+    if (!mobileDrawer) return;
+    mobileDrawer.classList.remove('open');
     hamburger?.classList.remove('open');
     hamburger?.setAttribute('aria-expanded', 'false');
-    drawerPanel?.classList.remove('visible');
-    
-    // Restore body scroll after animation
-    setTimeout(() => {
-      document.body.style.overflow = '';
-      document.body.style.position = '';
-      document.body.style.width = '';
-    }, 350);
+    document.body.style.overflow = '';
   }
 
-  // Hamburger toggle
-  hamburger?.addEventListener('click', (e) => {
-    e.stopPropagation();
-    isDrawerOpen ? closeMobileDrawer() : openMobileDrawer();
-  });
+  document.addEventListener('DOMContentLoaded', function () {
+    const nav          = document.getElementById('mainNav');
+    const hamburger    = document.getElementById('hamburger');
+    const mobileDrawer = document.getElementById('mobileDrawer');
+    const drawerBackdrop = mobileDrawer?.querySelector('.drawer-backdrop');
+    const drawerClose  = document.getElementById('drawerClose');
 
-  // Close on backdrop click
-  drawerBackdrop?.addEventListener('click', closeMobileDrawer);
+    // ── SCROLL BEHAVIOUR ──
+    const NAV_THRESHOLD = 20;
 
-  // Close on close button click
-  drawerClose?.addEventListener('click', (e) => {
-    e.stopPropagation();
-    closeMobileDrawer();
-  });
+    function updateNav() {
+      if (!nav) return;
+      const scrollY = window.scrollY;
+      const isTop = scrollY < NAV_THRESHOLD;
 
-  // Close drawer on Escape key
-  document.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape' && isDrawerOpen) {
-      closeMobileDrawer();
+      if (nav.dataset.style === 'transparent') {
+        nav.classList.toggle('transparent', isTop);
+        nav.classList.toggle('solid', !isTop);
+        nav.classList.remove('white');
+      } else {
+        nav.classList.add('white');
+        nav.classList.remove('transparent', 'solid');
+      }
     }
-  });
 
-  // Close drawer when clicking outside (on drawer panel area shouldn't close)
-  document.addEventListener('click', (e) => {
-    if (isDrawerOpen && !drawerPanel?.contains(e.target) && !hamburger?.contains(e.target)) {
-      closeMobileDrawer();
+    window.addEventListener('scroll', updateNav, { passive: true });
+    updateNav(); // Initial call
+
+    // ── ACTIVE LINK HIGHLIGHTING ──
+    function setActiveNavLinks() {
+      const currentFile = location.pathname.split('/').pop() || 'index.html';
+      document.querySelectorAll('[data-nav-link]').forEach(link => {
+        const href = link.getAttribute('href') || '';
+        const linkFile = href.split('/').pop() || 'index.html';
+        const isActive = linkFile === currentFile ||
+          (currentFile === '' && linkFile === 'index.html') ||
+          (currentFile === 'index.html' && (href === './' || href === 'index.html'));
+        link.classList.toggle('active', isActive);
+      });
     }
-  });
+    setActiveNavLinks();
 
-  // ── SCROLL BEHAVIOUR ──
-  let lastScroll = 0;
-  const NAV_THRESHOLD = 20;
-
-  function updateNav() {
-    if (!nav) return;
-    const scrollY = window.scrollY;
-
-    // Add/remove solid class based on scroll position
-    const isTop = scrollY < NAV_THRESHOLD;
-
-    if (nav.dataset.style === 'transparent') {
-      // Hero pages: transparent at top, solid on scroll
-      nav.classList.toggle('transparent', isTop);
-      nav.classList.toggle('solid', !isTop);
-      nav.classList.remove('white');
-    } else {
-      // White nav for inner pages
-      nav.classList.add('white');
-      nav.classList.remove('transparent', 'solid');
+    // ── HAMBURGER TOGGLE ──
+    if (hamburger) {
+      hamburger.addEventListener('click', () => {
+        const isOpen = mobileDrawer?.classList.contains('open');
+        isOpen ? closeMobileDrawer() : openMobileDrawer();
+      });
     }
-    lastScroll = scrollY;
-  }
 
-  window.addEventListener('scroll', updateNav, { passive: true });
-  updateNav(); // Initial call
+    // ── CLOSE ON BACKDROP / X BUTTON ──
+    drawerBackdrop?.addEventListener('click', closeMobileDrawer);
+    drawerClose?.addEventListener('click', closeMobileDrawer);
 
-  // ── ACTIVE LINK HIGHLIGHTING ──
-  function setActiveNavLinks() {
-    const currentPath = location.pathname;
-    const currentFile = currentPath.split('/').pop() || 'index.html';
-
-    document.querySelectorAll('[data-nav-link]').forEach(link => {
-      const href = link.getAttribute('href') || '';
-      const linkFile = href.split('/').pop() || 'index.html';
-      const isActive = linkFile === currentFile ||
-        (currentFile === '' && linkFile === 'index.html') ||
-        (currentFile === 'index.html' && href === './') ||
-        (currentFile === 'index.html' && href === 'index.html');
-
-      link.classList.toggle('active', isActive);
+    // ── CLOSE ON DRAWER LINK CLICK (navigates then closes) ──
+    mobileDrawer?.querySelectorAll('.drawer-link').forEach(link => {
+      link.addEventListener('click', () => {
+        closeMobileDrawer();
+      });
     });
-  }
-  
-  // Call on page load
-  setActiveNavLinks();
-  
-  // Update active links on page show (for history navigation)
-  window.addEventListener('pageshow', () => {
-    setTimeout(setActiveNavLinks, 50);
-  });
+
+    // ── CLOSE ON ESCAPE KEY ──
+    document.addEventListener('keydown', e => {
+      if (e.key === 'Escape') closeMobileDrawer();
+    });
+  }); // end DOMContentLoaded
 
 
   /* ================================================================
@@ -272,6 +237,7 @@
 
         function tick(now) {
           const elapsed = Math.min((now - start) / duration, 1);
+          // Ease-out-expo
           const eased = elapsed === 1 ? 1 : 1 - Math.pow(2, -10 * elapsed);
           const val = target * eased;
           el.textContent = isFloat ? val.toFixed(1) : Math.round(val);
@@ -297,7 +263,9 @@
       const btn = item.querySelector('.faq-question');
       btn?.addEventListener('click', () => {
         const isOpen = item.classList.contains('open');
+        // Close all
         items.forEach(i => i.classList.remove('open'));
+        // Toggle current
         if (!isOpen) item.classList.add('open');
       });
     });
@@ -345,6 +313,7 @@
       const submitBtn = form.querySelector('[type="submit"]');
       const successEl = document.getElementById('formSuccess');
 
+      // Simulate submission (replace with actual backend call)
       submitBtn.disabled = true;
       submitBtn.innerHTML = `
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:18px;height:18px;animation:spin 1s linear infinite">
@@ -454,6 +423,7 @@
     const track = document.querySelector('.carousel-track');
     if (!track) return;
 
+    // Clone items for infinite scroll
     const items = track.querySelectorAll('.carousel-item');
     items.forEach(item => {
       const clone = item.cloneNode(true);
@@ -486,17 +456,17 @@
 
     sections.forEach(s => observer.observe(s));
   }
-
-
   /* ================================================================
      14. QUICK APPOINTMENT WHATSAPP BOOKING MODAL
+     Intercepts all WhatsApp booking triggers, prompts user info,
+     and forwards details cleanly prefilled to clinic on WhatsApp.
   ================================================================ */
 
   function openQuickBookingModal() {
     const modal = document.getElementById('quick-booking-modal');
     if (!modal) return;
     modal.style.display = 'flex';
-    modal.getBoundingClientRect();
+    modal.getBoundingClientRect(); // Trigger layout reflow
     modal.classList.add('open');
     modal.setAttribute('aria-hidden', 'false');
     document.body.style.overflow = 'hidden';
@@ -520,6 +490,7 @@
     const target = e.target.closest('a[href*="wa.me"], a[href*="whatsapp.com"], .btn-wa, .btn-whatsapp, .hero-book-btn, #fabWa');
     if (!target) return;
 
+    // Skip if it's inside the quick booking modal itself
     if (target.closest('#quick-booking-modal')) return;
 
     e.preventDefault();
@@ -564,8 +535,11 @@ Please confirm my slot. Thank you!`;
       window.open(whatsappUrl, '_blank');
       
       closeQuickBookingModal();
+      
+      // Reset form
       e.target.reset();
     }
   });
 
 })();
+
