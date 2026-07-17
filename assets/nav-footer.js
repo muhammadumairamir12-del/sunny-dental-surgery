@@ -223,6 +223,7 @@
                 <option value="Orthodontics & Braces">Orthodontics &amp; Braces</option>
                 <option value="Root Canal Treatment">Root Canal Treatment</option>
                 <option value="Emergency Dentistry">Emergency Dentistry</option>
+                <option value="Oral Surgery">Oral Surgery</option>
                 <option value="Paediatric Dentistry">Paediatric Dentistry</option>
                 <option value="Other">Other</option>
               </select>
