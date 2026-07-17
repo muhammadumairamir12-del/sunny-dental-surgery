@@ -182,7 +182,7 @@
   </footer>
   <!-- Floating WhatsApp -->
   <a href="${WA_LINK}" class="fab-wa" target="_blank" rel="noopener" title="Chat on WhatsApp" id="fabWa">
-    <div class="fab-pulse"></div>
+    <span class="fab-wa-tooltip">Need Help? Chat with us</span>
     <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.75.46 3.39 1.26 4.81L2 22l5.42-1.42a9.9 9.9 0 004.62 1.14h.01c5.46 0 9.9-4.45 9.9-9.91C21.96 6.45 17.5 2 12.04 2zm5.8 14.03c-.24.68-1.4 1.32-1.93 1.4-.5.08-1.12.11-1.8-.12-.42-.13-.95-.31-1.64-.6-2.88-1.24-4.76-4.13-4.9-4.32-.14-.19-1.17-1.56-1.17-2.98 0-1.42.74-2.11 1-2.4.26-.29.57-.36.76-.36.19 0 .38 0 .55.01.18.01.41-.07.64.49.24.58.81 2 .88 2.15.07.15.12.32.02.51-.09.19-.14.31-.28.48-.14.17-.29.37-.42.5-.14.14-.28.29-.12.57.16.28.71 1.17 1.53 1.9 1.05.94 1.94 1.23 2.22 1.37.28.14.44.12.6-.07.17-.19.71-.83.9-1.11.19-.28.38-.24.63-.14.26.09 1.66.78 1.94.92.28.14.47.21.54.33.07.12.07.68-.17 1.35z"/></svg>
   </a>
 
@@ -193,54 +193,104 @@
 
   const BOOKING_MODAL_HTML = `
   <!-- QUICK APPOINTMENT MODAL -->
-  <div id="quick-booking-modal" class="booking-modal-overlay" aria-hidden="true" role="dialog">
+  <div id="quick-booking-modal" class="booking-modal-overlay" aria-hidden="true" role="dialog" aria-modal="true" aria-describedby="quickBookingFormDesc">
     <div class="booking-modal">
       <div class="booking-modal-header">
-        <h3>Contact via WhatsApp</h3>
-        <button class="booking-modal-close" id="closeBookingModal" aria-label="Close booking modal">&times;</button>
+        <div class="header-logo" aria-hidden="true">
+          <svg class="brand-tooth" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M18 3C13.0 3 9 6.8 9 11.5c0 3 1 5 1.6 9.5.5 3.3 1.4 6 3.2 6 1.4 0 2-2.2 2.4-4.4.2-1.5 1.1-2.1 1.8-2.1s1.6.6 1.8 2.1c.4 2.2 1 4.4 2.4 4.4 1.8 0 2.7-2.7 3.2-6 .6-4.5 1.6-6.5 1.6-9.5C27 6.8 23 3 18 3Z" fill="currentColor"/>
+          </svg>
+        </div>
+        <h3>Book an Appointment</h3>
+        <p id="quickBookingFormDesc">Fill in your details and we'll connect you on WhatsApp.</p>
+        <button class="booking-modal-close" id="closeBookingModal" aria-label="Close booking modal">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
       </div>
-      <div class="booking-modal-body">
-        <p class="modal-subtitle">Fill in your details and we'll send a pre-filled message to WhatsApp</p>
-        <form id="quickBookingForm">
-          <div class="form-row">
-            <div class="form-group">
-              <label for="qbName">FULL NAME <span>*</span></label>
-              <input type="text" id="qbName" class="form-input" placeholder="Your full name" required>
+      <div class="booking-modal-body" id="bookingModalBody">
+        <form id="quickBookingForm" novalidate>
+          <div class="booking-form-grid">
+            <!-- Full Name -->
+            <div class="floating-group" id="qbNameGroup">
+              <span class="input-icon-wrapper" aria-hidden="true">
+                <svg viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
+              </span>
+              <input type="text" id="qbName" class="form-input-floating" placeholder=" " required autocomplete="name">
+              <label for="qbName">Full Name</label>
+              <span class="error-msg" id="qbNameError">Name cannot be empty or contain only numbers</span>
             </div>
-            <div class="form-group">
-              <label for="qbMobile">PHONE <span>*</span></label>
-              <input type="tel" id="qbMobile" class="form-input" placeholder="0300-0000000" required>
+
+            <!-- Phone -->
+            <div class="floating-group" id="qbMobileGroup">
+              <span class="input-icon-wrapper" aria-hidden="true">
+                <svg viewBox="0 0 24 24"><path d="M6.62 10.79a15.149 15.149 0 006.59 6.59l2.2-2.2c.28-.28.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z"/></svg>
+              </span>
+              <input type="tel" id="qbMobile" class="form-input-floating" placeholder=" " required autocomplete="tel">
+              <label for="qbMobile">Phone Number</label>
+              <span class="error-msg" id="qbMobileError">Please enter a valid phone number</span>
+            </div>
+
+            <!-- Select Service -->
+            <div class="floating-group span-2" id="qbServiceGroup">
+              <span class="input-icon-wrapper" aria-hidden="true">
+                <svg viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-2 10h-4v4h-2v-4H7v-2h4V7h2v4h4v2z"/></svg>
+              </span>
+              <select id="qbService" class="form-select-floating" required>
+                <option value="" disabled selected></option>
+                <option value="General & Preventive">General & Preventive</option>
+                <option value="Cosmetic Dentistry">Cosmetic Dentistry</option>
+                <option value="Dental Implants">Dental Implants</option>
+                <option value="Orthodontics & Braces">Orthodontics & Braces</option>
+                <option value="Root Canal Treatment">Root Canal Treatment</option>
+                <option value="Emergency Dentistry">Emergency Dentistry</option>
+                <option value="Paediatric Dentistry">Paediatric Dentistry</option>
+                <option value="Other">Other Concern</option>
+              </select>
+              <label for="qbService">Select Service</label>
+              <span class="error-msg" id="qbServiceError">Please select a service</span>
+            </div>
+
+            <!-- Preferred Date -->
+            <div class="floating-group has-value" id="qbDateGroup">
+              <span class="input-icon-wrapper" aria-hidden="true">
+                <svg viewBox="0 0 24 24"><path d="M19 3h-1V1h-2v2H8V1H6v2H5c-1.11 0-1.99.9-1.99 2L3 19c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V8h14v11zM7 10h5v5H7z"/></svg>
+              </span>
+              <input type="date" id="qbDate" class="form-input-floating" required>
+              <label for="qbDate">Preferred Date</label>
+              <span class="error-msg" id="qbDateError">Date cannot be in the past</span>
+            </div>
+
+            <!-- Preferred Time -->
+            <div class="floating-group has-value" id="qbTimeGroup">
+              <span class="input-icon-wrapper" aria-hidden="true">
+                <svg viewBox="0 0 24 24"><path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67z"/></svg>
+              </span>
+              <input type="time" id="qbTime" class="form-input-floating" required>
+              <label for="qbTime">Preferred Time</label>
+              <span class="error-msg" id="qbTimeError">Please select a preferred time</span>
             </div>
           </div>
-          <div class="form-group">
-            <label for="qbService">SELECT SERVICE <span>*</span></label>
-            <select id="qbService" class="form-select" required>
-              <option value="" disabled selected>Select Treatment</option>
-              <option value="General & Preventive">General & Preventive</option>
-              <option value="Cosmetic Dentistry">Cosmetic Dentistry</option>
-              <option value="Dental Implants">Dental Implants</option>
-              <option value="Orthodontics & Braces">Orthodontics & Braces</option>
-              <option value="Root Canal Treatment">Root Canal Treatment</option>
-              <option value="Emergency Dentistry">Emergency Dentistry</option>
-              <option value="Paediatric Dentistry">Paediatric Dentistry</option>
-              <option value="Other">Other Concern</option>
-            </select>
-          </div>
-          <div class="form-row">
-            <div class="form-group">
-              <label for="qbDate">PREFERRED DATE <span>*</span></label>
-              <input type="date" id="qbDate" class="form-input" required>
-            </div>
-            <div class="form-group">
-              <label for="qbTime">TIME (10 AM - 12 PM) <span>*</span></label>
-              <input type="time" id="qbTime" class="form-input" required>
-            </div>
-          </div>
-          <button type="submit" class="btn btn-pink w-full">
-            <svg viewBox="0 0 24 24" fill="currentColor" style="width:18px;height:18px;margin-right:8px;"><path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.75.46 3.39 1.26 4.81L2 22l5.42-1.42a9.9 9.9 0 004.62 1.14h.01c5.46 0 9.9-4.45 9.9-9.91C21.96 6.45 17.5 2 12.04 2zm5.8 14.03c-.24.68-1.4 1.32-1.93 1.4-.5.08-1.12.11-1.8-.12-.42-.13-.95-.31-1.64-.6-2.88-1.24-4.76-4.13-4.9-4.32-.14-.19-1.17-1.56-1.17-2.98 0-1.42.74-2.11 1-2.4.26-.29.57-.36.76-.36.19 0 .38 0 .55.01.18.01.41-.07.64.49.24.58.81 2 .88 2.15.07.15.12.32.02.51-.09.19-.14.31-.28.48-.14.17-.29.37-.42.5-.14.14-.28.29-.12.57.16.28.71 1.17 1.53 1.9 1.05.94 1.94 1.23 2.22 1.37.28.14.44.12.6-.07.17-.19.71-.83.9-1.11.19-.28.38-.24.63-.14.26.09 1.66.78 1.94.92.28.14.47.21.54.33.07.12.07.68-.17 1.35z"/></svg>
-            Send via WhatsApp
+
+          <button type="submit" class="btn btn-wa w-full" id="qbSubmitBtn" style="height:48px; border-radius:12px;">
+            <svg class="wa-btn-icon" viewBox="0 0 24 24" fill="currentColor" style="width:18px;height:18px;margin-right:8px;transition:transform 0.2s;"><path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.75.46 3.39 1.26 4.81L2 22l5.42-1.42a9.9 9.9 0 004.62 1.14h.01c5.46 0 9.9-4.45 9.9-9.91C21.96 6.45 17.5 2 12.04 2zm5.8 14.03c-.24.68-1.4 1.32-1.93 1.4-.5.08-1.12.11-1.8-.12-.42-.13-.95-.31-1.64-.6-2.88-1.24-4.76-4.13-4.9-4.32-.14-.19-1.17-1.56-1.17-2.98 0-1.42.74-2.11 1-2.4.26-.29.57-.36.76-.36.19 0 .38 0 .55.01.18.01.41-.07.64.49.24.58.81 2 .88 2.15.07.15.12.32.02.51-.09.19-.14.31-.28.48-.14.17-.29.37-.42.5-.14.14-.28.29-.12.57.16.28.71 1.17 1.53 1.9 1.05.94 1.94 1.23 2.22 1.37.28.14.44.12.6-.07.17-.19.71-.83.9-1.11.19-.28.38-.24.63-.14.26.09 1.66.78 1.94.92.28.14.47.21.54.33.07.12.07.68-.17 1.35z"/></svg>
+            <span class="btn-text">Send via WhatsApp</span>
           </button>
         </form>
+
+        <!-- Dynamic Success Experience -->
+        <div id="booking-success-screen" class="booking-success-screen" style="display:none;">
+          <div class="success-checkmark-wrapper">
+            <svg class="checkmark-svg" viewBox="0 0 52 52">
+              <circle class="checkmark-circle" cx="26" cy="26" r="25" fill="none"/>
+              <path class="checkmark-check" fill="none" d="M14.1 27.2l7.1 7.2 16.7-16.8"/>
+            </svg>
+          </div>
+          <h4>Preparing your WhatsApp booking...</h4>
+          <p>Connecting you with Sunny Dental, please wait.</p>
+        </div>
       </div>
     </div>
   </div>`;

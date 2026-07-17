@@ -190,8 +190,13 @@
 
     // ── CLOSE ON ESCAPE KEY ──
     document.addEventListener('keydown', e => {
-      if (e.key === 'Escape') closeMobileDrawer();
+      if (e.key === 'Escape') {
+        closeMobileDrawer();
+        closeQuickBookingModal();
+      }
     });
+
+    setupBookingValidation();
   }); // end DOMContentLoaded
 
 
@@ -456,89 +461,310 @@
 
     sections.forEach(s => observer.observe(s));
   }
+
   /* ================================================================
      14. QUICK APPOINTMENT WHATSAPP BOOKING MODAL
      Intercepts all WhatsApp booking triggers, prompts user info,
      and forwards details cleanly prefilled to clinic on WhatsApp.
   ================================================================ */
 
+  let previousActiveElement = null;
+
   function openQuickBookingModal() {
     const modal = document.getElementById('quick-booking-modal');
     if (!modal) return;
+
+    previousActiveElement = document.activeElement;
+
+    // Prevent layout shift: calculate scrollbar width
+    const scrollbarWidth = window.innerWidth - document.documentElement.clientWidth;
+    if (scrollbarWidth > 0) {
+      document.body.style.paddingRight = `${scrollbarWidth}px`;
+      const navEl = document.getElementById('mainNav');
+      if (navEl) navEl.style.paddingRight = `${scrollbarWidth}px`;
+      const fabEl = document.getElementById('fabWa');
+      if (fabEl) {
+        const currentRight = window.innerWidth <= 480 ? 18 : 24;
+        fabEl.style.right = `${currentRight + scrollbarWidth}px`;
+      }
+    }
+
     modal.style.display = 'flex';
     modal.getBoundingClientRect(); // Trigger layout reflow
     modal.classList.add('open');
     modal.setAttribute('aria-hidden', 'false');
     document.body.style.overflow = 'hidden';
+
+    // Auto focus first input
+    const nameInput = document.getElementById('qbName');
+    if (nameInput) {
+      setTimeout(() => nameInput.focus(), 100);
+    }
+
+    // Add focus trap keydown listener
+    document.addEventListener('keydown', trapFocus);
   }
 
   function closeQuickBookingModal() {
     const modal = document.getElementById('quick-booking-modal');
     if (!modal) return;
+
     modal.classList.remove('open');
     modal.setAttribute('aria-hidden', 'true');
+
+    // Restore scroll and layout padding
     document.body.style.overflow = '';
+    document.body.style.paddingRight = '';
+    const navEl = document.getElementById('mainNav');
+    if (navEl) navEl.style.paddingRight = '';
+    const fabEl = document.getElementById('fabWa');
+    if (fabEl) fabEl.style.right = '';
+
+    // Restore focus
+    if (previousActiveElement && typeof previousActiveElement.focus === 'function') {
+      previousActiveElement.focus();
+    }
+
+    // Remove focus trap keydown listener
+    document.removeEventListener('keydown', trapFocus);
+
     setTimeout(() => {
       if (!modal.classList.contains('open')) {
         modal.style.display = 'none';
+        
+        // Reset success screen
+        const successScreen = document.getElementById('booking-success-screen');
+        const formEl = document.getElementById('quickBookingForm');
+        if (successScreen) successScreen.style.display = 'none';
+        if (formEl) formEl.style.display = 'block';
+
+        // Clear validation classes
+        modal.querySelectorAll('.floating-group').forEach(group => {
+          group.classList.remove('is-valid', 'is-invalid', 'has-value');
+        });
+        
+        // Date/Time fields should keep has-value
+        document.getElementById('qbDateGroup')?.classList.add('has-value');
+        document.getElementById('qbTimeGroup')?.classList.add('has-value');
+
+        // Reset form
+        formEl?.reset();
       }
-    }, 300);
+    }, 400);
   }
 
-  // Intercept WhatsApp links & buttons
+  // Trap keyboard focus inside modal (Accessibility)
+  function trapFocus(e) {
+    if (e.key !== 'Tab') return;
+    const modal = document.getElementById('quick-booking-modal');
+    if (!modal || !modal.classList.contains('open')) return;
+
+    const focusableSelector = 'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])';
+    const focusables = Array.from(modal.querySelectorAll(focusableSelector)).filter(el => {
+      return el.offsetParent !== null && !el.disabled;
+    });
+
+    if (focusables.length === 0) return;
+
+    const firstEl = focusables[0];
+    const lastEl = focusables[focusables.length - 1];
+
+    if (e.shiftKey) { // Shift + Tab
+      if (document.activeElement === firstEl) {
+        lastEl.focus();
+        e.preventDefault();
+      }
+    } else { // Tab
+      if (document.activeElement === lastEl) {
+        firstEl.focus();
+        e.preventDefault();
+      }
+    }
+  }
+
+  // Intercept all booking triggers
   document.addEventListener('click', function (e) {
-    const target = e.target.closest('a[href*="wa.me"], a[href*="whatsapp.com"], .btn-wa, .btn-whatsapp, .hero-book-btn, #fabWa');
+    const target = e.target.closest('a, button, .btn, .hero-book-btn, #fabWa');
     if (!target) return;
 
-    // Skip if it's inside the quick booking modal itself
+    // Skip inside modal itself
     if (target.closest('#quick-booking-modal')) return;
 
-    e.preventDefault();
-    openQuickBookingModal();
+    const text = target.textContent.trim().toLowerCase();
+    const href = target.getAttribute('href') || '';
+    const id = target.id;
+
+    const matchesText = text.includes('book now') ||
+                        text.includes('book appointment') ||
+                        text.includes('whatsapp booking') ||
+                        text.includes('appointment');
+
+    const matchesHref = href.includes('wa.me') || href.includes('whatsapp.com');
+    const matchesClassOrId = target.classList.contains('btn-wa') ||
+                             target.classList.contains('btn-whatsapp') ||
+                             target.classList.contains('hero-book-btn') ||
+                             id === 'fabWa';
+
+    if (matchesText || matchesHref || matchesClassOrId) {
+      e.preventDefault();
+      openQuickBookingModal();
+    }
   });
 
-  // Handle Close Trigger
+  // Handle Overlay Close click
   document.addEventListener('click', function (e) {
     if (
-      e.target.id === 'closeBookingModal' || 
-      e.target.closest('#closeBookingModal') || 
+      e.target.id === 'closeBookingModal' ||
+      e.target.closest('#closeBookingModal') ||
       (e.target.classList.contains('booking-modal-overlay') && e.target.id === 'quick-booking-modal')
     ) {
       closeQuickBookingModal();
     }
   });
 
-  // Handle Form Submission
+  // Inline Validation helper functions
+  function validateField(inputEl, isValid) {
+    const group = inputEl.closest('.floating-group');
+    if (!group) return isValid;
+    if (isValid) {
+      group.classList.add('is-valid');
+      group.classList.remove('is-invalid');
+    } else {
+      group.classList.add('is-invalid');
+      group.classList.remove('is-valid');
+    }
+    return isValid;
+  }
+
+  function validateName(input) {
+    const val = input.value.trim();
+    const isValid = val.length > 0 && !/^\d+$/.test(val);
+    return validateField(input, isValid);
+  }
+
+  function validatePhone(input) {
+    const val = input.value.trim();
+    // Valid phone format: digits, optional plus, dashes, spaces, min 10 max 15 digits
+    const isValid = /^\+?[0-9\s\-()]{10,15}$/.test(val);
+    return validateField(input, isValid);
+  }
+
+  // Global validators needed by inline listeners
+  window.validateName = validateName;
+  window.validatePhone = validatePhone;
+  window.validateService = function(select) {
+    const isValid = select.value !== "";
+    return validateField(select, isValid);
+  };
+  window.validateDate = function(input) {
+    const val = input.value;
+    let isValid = val !== "";
+    if (isValid) {
+      const selectedDate = new Date(val + 'T00:00:00');
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      isValid = selectedDate >= today;
+    }
+    return validateField(input, isValid);
+  };
+  window.validateTime = function(input) {
+    const isValid = input.value !== "";
+    return validateField(input, isValid);
+  };
+
+  // Setup validations
+  function setupBookingValidation() {
+    const form = document.getElementById('quickBookingForm');
+    if (!form) return;
+
+    const nameInput = document.getElementById('qbName');
+    const phoneInput = document.getElementById('qbMobile');
+    const serviceSelect = document.getElementById('qbService');
+    const dateInput = document.getElementById('qbDate');
+    const timeInput = document.getElementById('qbTime');
+
+    if (nameInput) nameInput.addEventListener('input', () => window.validateName(nameInput));
+    if (phoneInput) phoneInput.addEventListener('input', () => window.validatePhone(phoneInput));
+    if (serviceSelect) {
+      serviceSelect.addEventListener('change', () => {
+        window.validateService(serviceSelect);
+        const group = serviceSelect.closest('.floating-group');
+        if (serviceSelect.value) {
+          group.classList.add('has-value');
+        } else {
+          group.classList.remove('has-value');
+        }
+      });
+    }
+    if (dateInput) dateInput.addEventListener('change', () => window.validateDate(dateInput));
+    if (timeInput) timeInput.addEventListener('change', () => window.validateTime(timeInput));
+  }
+
+  // Expose setup globally in case needed
+  window.setupBookingValidation = setupBookingValidation;
+
+  // Handle Form Submission with Custom Success Screen
   document.addEventListener('submit', function (e) {
     if (e.target.id === 'quickBookingForm') {
       e.preventDefault();
-      
-      const name = document.getElementById('qbName')?.value.trim() || '';
-      const mobile = document.getElementById('qbMobile')?.value.trim() || '';
-      const service = document.getElementById('qbService')?.value || 'General Consultation';
-      const date = document.getElementById('qbDate')?.value.trim() || '';
-      const time = document.getElementById('qbTime')?.value.trim() || '';
 
-      const textMessage = `Assalam-o-Alaikum Sunny Dental Surgery,
+      const form = e.target;
+      const nameInput = document.getElementById('qbName');
+      const phoneInput = document.getElementById('qbMobile');
+      const serviceSelect = document.getElementById('qbService');
+      const dateInput = document.getElementById('qbDate');
+      const timeInput = document.getElementById('qbTime');
 
-I would like to book a dental appointment. Here are my details:
-- Name: ${name}
-- Phone: ${mobile}
-- Treatment: ${service}
-- Preferred Date: ${date}
-- Preferred Time: ${time}
+      const isNameVal = nameInput ? window.validateName(nameInput) : false;
+      const isPhoneVal = phoneInput ? window.validatePhone(phoneInput) : false;
+      const isServiceVal = serviceSelect ? window.validateService(serviceSelect) : false;
+      const isDateVal = dateInput ? window.validateDate(dateInput) : false;
+      const isTimeVal = timeInput ? window.validateTime(timeInput) : false;
 
-Please confirm my slot. Thank you!`;
+      if (!isNameVal || !isPhoneVal || !isServiceVal || !isDateVal || !isTimeVal) {
+        const firstInvalid = form.querySelector('.is-invalid input, .is-invalid select');
+        firstInvalid?.focus();
+        return;
+      }
 
-      const whatsappUrl = `https://wa.me/923395192800?text=${encodeURIComponent(textMessage)}`;
-      window.open(whatsappUrl, '_blank');
-      
-      closeQuickBookingModal();
-      
-      // Reset form
-      e.target.reset();
+      const successScreen = document.getElementById('booking-success-screen');
+      const submitBtn = document.getElementById('qbSubmitBtn');
+
+      if (successScreen && submitBtn) {
+        // Hide form fields and show success screen
+        form.style.display = 'none';
+        successScreen.style.display = 'flex';
+
+        const name = nameInput.value.trim();
+        const mobile = phoneInput.value.trim();
+        const service = serviceSelect.value;
+        const date = dateInput.value;
+        const time = timeInput.value;
+
+        // Message body matching specifications
+        const textMessage = `Hello,
+
+I would like to book an appointment.
+
+Name: ${name}
+Phone: ${mobile}
+Service: ${service}
+Preferred Date: ${date}
+Preferred Time: ${time}
+
+Please confirm my appointment.
+
+Thank you.`;
+
+        const whatsappUrl = `https://wa.me/923395192800?text=${encodeURIComponent(textMessage)}`;
+
+        // Approximately 700ms timeout
+        setTimeout(() => {
+          window.open(whatsappUrl, '_blank');
+          closeQuickBookingModal();
+        }, 700);
+      }
     }
   });
 
 })();
-
