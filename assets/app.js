@@ -514,19 +514,18 @@
       e.preventDefault();
       
       const name = document.getElementById('qbName')?.value.trim() || '';
-      const surname = document.getElementById('qbSurname')?.value.trim() || '';
       const mobile = document.getElementById('qbMobile')?.value.trim() || '';
-      const email = document.getElementById('qbEmail')?.value.trim() || 'Not provided';
       const service = document.getElementById('qbService')?.value || 'General Consultation';
+      const date = document.getElementById('qbDate')?.value || '';
       const time = document.getElementById('qbTime')?.value.trim() || '';
 
       const textMessage = `Assalam-o-Alaikum Sunny Dental Surgery,
 
 I would like to book a dental appointment. Here are my details:
-- Name: ${name} ${surname}
+- Name: ${name}
 - Mobile: ${mobile}
-- Email: ${email}
 - Treatment: ${service}
+- Preferred Date: ${date}
 - Preferred Time: ${time}
 
 Please confirm my slot. Thank you!`;
@@ -542,4 +541,3 @@ Please confirm my slot. Thank you!`;
   });
 
 })();
-
