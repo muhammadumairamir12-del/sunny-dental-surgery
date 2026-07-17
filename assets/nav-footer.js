@@ -196,51 +196,48 @@
   <div id="quick-booking-modal" class="booking-modal-overlay" aria-hidden="true" role="dialog">
     <div class="booking-modal">
       <div class="booking-modal-header">
-        <h4>Contact via WhatsApp</h4>
+        <h3>Contact via WhatsApp</h3>
         <button class="booking-modal-close" id="closeBookingModal" aria-label="Close booking modal">&times;</button>
       </div>
       <div class="booking-modal-body">
-        <p class="booking-modal-sub">Fill in your details and we'll send a pre-filled message to WhatsApp</p>
+        <p class="modal-subtitle">Fill in your details and we'll send a pre-filled message to WhatsApp</p>
         <form id="quickBookingForm">
           <div class="form-row">
             <div class="form-group">
-              <label for="qbName">Full Name <span>*</span></label>
+              <label for="qbName">FULL NAME <span>*</span></label>
               <input type="text" id="qbName" class="form-input" placeholder="Your full name" required>
             </div>
             <div class="form-group">
-              <label for="qbMobile">Phone <span>*</span></label>
+              <label for="qbMobile">PHONE <span>*</span></label>
               <input type="tel" id="qbMobile" class="form-input" placeholder="0300-0000000" required>
             </div>
           </div>
-          <div class="form-row full-width">
-            <div class="form-group">
-              <label for="qbService">Select Service <span>*</span></label>
-              <select id="qbService" class="form-select" required>
-                <option value="" disabled selected>Select Treatment</option>
-                <option value="General & Preventive">General &amp; Preventive</option>
-                <option value="Cosmetic Dentistry">Cosmetic Dentistry</option>
-                <option value="Dental Implants">Dental Implants</option>
-                <option value="Orthodontics & Braces">Orthodontics &amp; Braces</option>
-                <option value="Root Canal Treatment">Root Canal Treatment</option>
-                <option value="Emergency Dentistry">Emergency Dentistry</option>
-                <option value="Oral Surgery">Oral Surgery</option>
-                <option value="Paediatric Dentistry">Paediatric Dentistry</option>
-                <option value="Other">Other</option>
-              </select>
-            </div>
+          <div class="form-group">
+            <label for="qbService">SELECT SERVICE <span>*</span></label>
+            <select id="qbService" class="form-select" required>
+              <option value="" disabled selected>Select Treatment</option>
+              <option value="General & Preventive">General & Preventive</option>
+              <option value="Cosmetic Dentistry">Cosmetic Dentistry</option>
+              <option value="Dental Implants">Dental Implants</option>
+              <option value="Orthodontics & Braces">Orthodontics & Braces</option>
+              <option value="Root Canal Treatment">Root Canal Treatment</option>
+              <option value="Emergency Dentistry">Emergency Dentistry</option>
+              <option value="Paediatric Dentistry">Paediatric Dentistry</option>
+              <option value="Other">Other Concern</option>
+            </select>
           </div>
           <div class="form-row">
             <div class="form-group">
-              <label for="qbDate">Preferred Date <span>*</span></label>
+              <label for="qbDate">PREFERRED DATE <span>*</span></label>
               <input type="date" id="qbDate" class="form-input" required>
             </div>
             <div class="form-group">
-              <label for="qbTime">Preferred Time <span>*</span></label>
+              <label for="qbTime">TIME (10 AM - 12 PM) <span>*</span></label>
               <input type="time" id="qbTime" class="form-input" required>
             </div>
           </div>
-          <button type="submit" class="btn btn-wa-submit">
-            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.75.46 3.39 1.26 4.81L2 22l5.42-1.42a9.9 9.9 0 004.62 1.14h.01c5.46 0 9.9-4.45 9.9-9.91C21.96 6.45 17.5 2 12.04 2zm5.8 14.03c-.24.68-1.4 1.32-1.93 1.4-.5.08-1.12.11-1.8-.12-.42-.13-.95-.31-1.64-.6-2.88-1.24-4.76-4.13-4.9-4.32-.14-.19-1.17-1.56-1.17-2.98 0-1.42.74-2.11 1-2.4.26-.29.57-.36.76-.36.19 0 .38 0 .55.01.18.01.41-.07.64.49.24.58.81 2 .88 2.15.07.15.12.32.02.51-.09.19-.14.31-.28.48-.14.17-.29.37-.42.5-.14.14-.28.29-.12.57.16.28.71 1.17 1.53 1.9 1.05.94 1.94 1.23 2.22 1.37.28.14.44.12.6-.07.17-.19.71-.83.9-1.11.19-.28.38-.24.63-.14.26.09 1.66.78 1.94.92.28.14.47.21.54.33.07.12.07.68-.17 1.35z"/></svg>
+          <button type="submit" class="btn btn-pink w-full">
+            <svg viewBox="0 0 24 24" fill="currentColor" style="width:18px;height:18px;margin-right:8px;"><path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.75.46 3.39 1.26 4.81L2 22l5.42-1.42a9.9 9.9 0 004.62 1.14h.01c5.46 0 9.9-4.45 9.9-9.91C21.96 6.45 17.5 2 12.04 2zm5.8 14.03c-.24.68-1.4 1.32-1.93 1.4-.5.08-1.12.11-1.8-.12-.42-.13-.95-.31-1.64-.6-2.88-1.24-4.76-4.13-4.9-4.32-.14-.19-1.17-1.56-1.17-2.98 0-1.42.74-2.11 1-2.4.26-.29.57-.36.76-.36.19 0 .38 0 .55.01.18.01.41-.07.64.49.24.58.81 2 .88 2.15.07.15.12.32.02.51-.09.19-.14.31-.28.48-.14.17-.29.37-.42.5-.14.14-.28.29-.12.57.16.28.71 1.17 1.53 1.9 1.05.94 1.94 1.23 2.22 1.37.28.14.44.12.6-.07.17-.19.71-.83.9-1.11.19-.28.38-.24.63-.14.26.09 1.66.78 1.94.92.28.14.47.21.54.33.07.12.07.68-.17 1.35z"/></svg>
             Send via WhatsApp
           </button>
         </form>

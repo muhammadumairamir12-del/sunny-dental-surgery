@@ -462,20 +462,7 @@
      and forwards details cleanly prefilled to clinic on WhatsApp.
   ================================================================ */
 
-  function matchServiceText(text) {
-    const t = text.toLowerCase();
-    if (t.includes('general') || t.includes('preventive')) return 'General & Preventive';
-    if (t.includes('cosmetic') || t.includes('whitening')) return 'Cosmetic Dentistry';
-    if (t.includes('implant')) return 'Dental Implants';
-    if (t.includes('ortho') || t.includes('brace') || t.includes('align')) return 'Orthodontics & Braces';
-    if (t.includes('root') || t.includes('canal') || t.includes('endo')) return 'Root Canal Treatment';
-    if (t.includes('emergency')) return 'Emergency Dentistry';
-    if (t.includes('surgery') || t.includes('extraction')) return 'Oral Surgery';
-    if (t.includes('paediatric') || t.includes('child') || t.includes('ayesha')) return 'Paediatric Dentistry';
-    return '';
-  }
-
-  function openQuickBookingModal(serviceVal) {
+  function openQuickBookingModal() {
     const modal = document.getElementById('quick-booking-modal');
     if (!modal) return;
     modal.style.display = 'flex';
@@ -483,16 +470,6 @@
     modal.classList.add('open');
     modal.setAttribute('aria-hidden', 'false');
     document.body.style.overflow = 'hidden';
-
-    // Pre-select service in dropdown if available
-    const select = document.getElementById('qbService');
-    if (select) {
-      if (serviceVal) {
-        select.value = serviceVal;
-      } else {
-        select.selectedIndex = 0; // "Select Treatment" default
-      }
-    }
   }
 
   function closeQuickBookingModal() {
@@ -517,21 +494,7 @@
     if (target.closest('#quick-booking-modal')) return;
 
     e.preventDefault();
-
-    // UX: Detect context based on parent card
-    let preselectedService = '';
-    const serviceCard = target.closest('.service-full-card');
-    if (serviceCard) {
-      const h3Text = serviceCard.querySelector('h3')?.textContent.trim() || '';
-      preselectedService = matchServiceText(h3Text);
-    }
-    const homeServiceCard = target.closest('.service-card');
-    if (homeServiceCard) {
-      const h3Text = homeServiceCard.querySelector('h3')?.textContent.trim() || '';
-      preselectedService = matchServiceText(h3Text);
-    }
-
-    openQuickBookingModal(preselectedService);
+    openQuickBookingModal();
   });
 
   // Handle Close Trigger
@@ -553,14 +516,14 @@
       const name = document.getElementById('qbName')?.value.trim() || '';
       const mobile = document.getElementById('qbMobile')?.value.trim() || '';
       const service = document.getElementById('qbService')?.value || 'General Consultation';
-      const date = document.getElementById('qbDate')?.value || '';
+      const date = document.getElementById('qbDate')?.value.trim() || '';
       const time = document.getElementById('qbTime')?.value.trim() || '';
 
       const textMessage = `Assalam-o-Alaikum Sunny Dental Surgery,
 
 I would like to book a dental appointment. Here are my details:
 - Name: ${name}
-- Mobile: ${mobile}
+- Phone: ${mobile}
 - Treatment: ${service}
 - Preferred Date: ${date}
 - Preferred Time: ${time}
@@ -578,3 +541,4 @@ Please confirm my slot. Thank you!`;
   });
 
 })();
+
