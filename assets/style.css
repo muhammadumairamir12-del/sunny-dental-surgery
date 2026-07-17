@@ -1,0 +1,8 @@
+/* style.css — Legacy compatibility shim
+   The main design system is now in:
+   - assets/global.css
+   - assets/home.css
+   - assets/pages.css
+   This file exists only to prevent 404 errors if anything still references it.
+*/
+@import url('global.css');

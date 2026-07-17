@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>Gallery | Sunny Dental Surgery — Clinic, Treatments &amp; Patient Transformations</title>
+  <meta name="description" content="Explore Sunny Dental Surgery's gallery — before &amp; after smile transformations, our modern clinic facilities, treatment rooms, and events in Lahore.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;0,700;0,800;1,600&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/global.css">
+  <link rel="stylesheet" href="assets/pages.css">
+  <script src="assets/nav-footer.js" defer></script>
+  <script src="assets/app.js" defer></script>
+  <style>
+    /* Gallery placeholder items */
+    .gallery-placeholder {
+      width: 100%;
+      display: flex; align-items: center; justify-content: center;
+      font-family: var(--font-body);
+      font-weight: 700;
+      font-size: 0.88rem;
+      color: rgba(255,255,255,.8);
+      letter-spacing: 0.03em;
+      text-align: center;
+      padding: 16px;
+    }
+    .gallery-item .gallery-placeholder { position: relative; z-index: 0; }
+
+    /* Disease section header spacing */
+    .disease-section-header {
+      margin-bottom: 32px;
+    }
+
+    /* Gallery section label */
+    .gallery-category-label {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 5px 14px;
+      background: var(--teal-light);
+      color: var(--teal);
+      border-radius: var(--r-pill);
+      font-size: 0.7rem;
+      font-weight: 800;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    /* Info callout */
+    .gallery-info-strip {
+      background: linear-gradient(135deg, var(--teal-light) 0%, var(--gold-light) 100%);
+      border: 1px solid var(--teal-mid);
+      border-radius: var(--r-xl);
+      padding: 20px 28px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      margin-bottom: 40px;
+    }
+    .gallery-info-strip svg { width: 24px; height: 24px; color: var(--teal); flex-shrink: 0; }
+    .gallery-info-strip p { margin: 0; font-size: 0.88rem; color: var(--ink-mid); }
+    .gallery-info-strip strong { color: var(--teal); }
+  </style>
+</head>
+<body data-page="gallery">
+
+  <!-- PAGE HERO -->
+  <section class="page-hero">
+    <div class="container page-hero-inner">
+      <nav class="breadcrumb" aria-label="Breadcrumb">
+        <a href="index.html">Home</a>
+        <span class="breadcrumb-sep">›</span>
+        <span class="breadcrumb-current">Gallery</span>
+      </nav>
+      <span class="eyebrow eyebrow-gold">Visual Showcase</span>
+      <h1>Our Clinic, <em style="color:var(--gold);font-style:normal;">Treatments &amp; Transformations</em></h1>
+      <p>Explore our modern clinic spaces, treatment techniques, and the real smile results we've achieved for our patients in Lahore.</p>
+    </div>
+  </section>
+
+  <!-- GALLERY FILTERS + PHOTO GRID -->
+  <section class="section" style="background:var(--surface);">
+    <div class="container">
+
+      <div class="gallery-info-strip" data-reveal>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+        <p><strong>Use the filters below</strong> to browse by category — clinic spaces, treatment procedures, before &amp; after results, and community events.</p>
+      </div>
+
+      <!-- Filter Buttons -->
+      <div class="gallery-filters" data-reveal>
+        <button class="filter-btn active" data-filter="all" id="filter-all">All</button>
+        <button class="filter-btn" data-filter="clinic" id="filter-clinic">Clinic</button>
+        <button class="filter-btn" data-filter="treatments" id="filter-treatments">Treatments</button>
+        <button class="filter-btn" data-filter="before-after" id="filter-before-after">Before &amp; After</button>
+        <button class="filter-btn" data-filter="events" id="filter-events">Events</button>
+      </div>
+
+      <!-- Masonry Gallery Grid -->
+      <div class="gallery-grid" id="gallery-grid" data-reveal>
+
+        <!-- Clinic Items -->
+        <div class="gallery-item" data-category="clinic">
+          <img src="assets/clinic_interior.jpg" alt="Modern Reception Area" loading="lazy" style="width:100%;display:block;aspect-ratio:4/3;object-fit:cover;">
+          <div class="gallery-overlay">
+            <span>Modern Reception Area — Sunny Dental</span>
+          </div>
+        </div>
+
+        <div class="gallery-item" data-category="clinic">
+          <img src="assets/gallery/treatment_room.jpg" alt="Modern Treatment Room" loading="lazy" style="width:100%;display:block;aspect-ratio:1/1;object-fit:cover;">
+          <div class="gallery-overlay">
+            <span>State-of-the-Art Treatment Room</span>
+          </div>
+        </div>
+
+        <div class="gallery-item" data-category="treatments">
+          <img src="assets/gallery/cosmetic.jpg" alt="Teeth Whitening Session" loading="lazy" style="width:100%;display:block;aspect-ratio:4/3;object-fit:cover;">
+          <div class="gallery-overlay">
+            <span>Professional Teeth Whitening</span>
+          </div>
+        </div>
+
+        <div class="gallery-item" data-category="before-after">
+          <img src="assets/gallery/smile_transformation.jpg" alt="Before & After Smile Makeover" loading="lazy" style="width:100%;display:block;aspect-ratio:1/1;object-fit:cover;">
+          <div class="gallery-overlay">
+            <span>Full Smile Transformation</span>
+          </div>
+        </div>
+
+        <div class="gallery-item" data-category="clinic">
+          <img src="assets/gallery/general.jpg" alt="Digital X-Ray Suite" loading="lazy" style="width:100%;display:block;aspect-ratio:4/3;object-fit:cover;">
+          <div class="gallery-overlay">
+            <span>Digital Imaging &amp; Diagnostics</span>
+          </div>
+        </div>
+
+        <div class="gallery-item" data-category="treatments">
+          <img src="assets/gallery/ortho.jpg" alt="Orthodontic Consultation" loading="lazy" style="width:100%;display:block;aspect-ratio:1/1;object-fit:cover;">
+          <div class="gallery-overlay">
+            <span>Braces &amp; Aligner Planning</span>
+          </div>
+        </div>
+
+        <div class="gallery-item" data-category="events">
+          <img src="assets/clinic_interior.jpg" alt="Free Dental Camp 2024" loading="lazy" style="width:100%;display:block;aspect-ratio:4/3;object-fit:cover;">
+          <div class="gallery-overlay">
+            <span>Community Dental Camp — Lahore</span>
+          </div>
+        </div>
+
+        <div class="gallery-item" data-category="before-after">
+          <img src="assets/gallery/smile_transformation.jpg" alt="Veneer Transformation" loading="lazy" style="width:100%;display:block;aspect-ratio:1/1;object-fit:cover;">
+          <div class="gallery-overlay">
+            <span>Porcelain Veneer Result</span>
+          </div>
+        </div>
+
+        <div class="gallery-item" data-category="events">
+          <img src="assets/doctors/ayesha.jpg" alt="School Oral Health Drive" loading="lazy" style="width:100%;display:block;aspect-ratio:4/3;object-fit:cover;">
+          <div class="gallery-overlay">
+            <span>Children's School Dental Drive</span>
+          </div>
+        </div>
+
+      </div>
+      <!-- end gallery-grid -->
+
+    </div>
+  </section>
+
+  <!-- DENTAL DISEASES EDUCATION SECTION -->
+  <section class="section" style="background:var(--surface-2);">
+    <div class="container">
+      <div class="section-header center disease-section-header" data-reveal>
+        <span class="eyebrow">Oral Health Education</span>
+        <h2>Common Dental Conditions <em>We Treat</em></h2>
+        <p>Recognising dental diseases early can prevent pain, tooth loss, and costly treatments. Learn the warning signs below.</p>
+      </div>
+
+      <div class="disease-grid">
+
+        <!-- Tooth Decay (Caries) -->
+        <article class="disease-card" data-reveal data-reveal-delay="1">
+          <div class="disease-img">
+            <img src="assets/dental_diseases/caries.jpg" alt="Tooth Decay (Dental Caries)" loading="lazy">
+            <span class="severity-chip severity-medium">Moderate Risk</span>
+          </div>
+          <div class="disease-body">
+            <h3>Tooth Decay (Caries)</h3>
+            <p>Dental caries is the breakdown of tooth enamel caused by acids produced by bacteria. It's the most common dental disease worldwide and progresses silently if untreated.</p>
+            <div class="symptom-chips">
+              <span class="symptom-chip">Toothache</span>
+              <span class="symptom-chip">Sensitivity</span>
+              <span class="symptom-chip">Dark Spots</span>
+              <span class="symptom-chip">Holes in Teeth</span>
+            </div>
+          </div>
+        </article>
+
+        <!-- Gum Disease -->
+        <article class="disease-card" data-reveal data-reveal-delay="2">
+          <div class="disease-img">
+            <img src="assets/dental_diseases/gum_disease.jpg" alt="Gum Disease (Periodontitis)" loading="lazy">
+            <span class="severity-chip severity-high">High Risk</span>
+          </div>
+          <div class="disease-body">
+            <h3>Gum Disease</h3>
+            <p>Periodontal disease ranges from mild gingivitis to advanced periodontitis. Untreated gum disease is the leading cause of tooth loss in adults and has links to systemic health issues.</p>
+            <div class="symptom-chips">
+              <span class="symptom-chip">Bleeding Gums</span>
+              <span class="symptom-chip">Swelling</span>
+              <span class="symptom-chip">Bad Breath</span>
+              <span class="symptom-chip">Receding Gums</span>
+            </div>
+          </div>
+        </article>
+
+        <!-- Dental Abscess -->
+        <article class="disease-card" data-reveal data-reveal-delay="3">
+          <div class="disease-img">
+            <img src="assets/dental_diseases/abscess.jpg" alt="Dental Abscess" loading="lazy">
+            <span class="severity-chip severity-urgent">Urgent Care</span>
+          </div>
+          <div class="disease-body">
+            <h3>Dental Abscess</h3>
+            <p>A dental abscess is a pocket of pus caused by bacterial infection, typically at the root tip or in the gum. It requires immediate treatment to prevent the infection from spreading.</p>
+            <div class="symptom-chips">
+              <span class="symptom-chip">Severe Pain</span>
+              <span class="symptom-chip">Swelling</span>
+              <span class="symptom-chip">Fever</span>
+              <span class="symptom-chip">Pus / Foul Taste</span>
+            </div>
+          </div>
+        </article>
+
+        <!-- Dental Plaque & Tartar -->
+        <article class="disease-card" data-reveal data-reveal-delay="4">
+          <div class="disease-img">
+            <img src="assets/dental_diseases/plaque.jpg" alt="Dental Plaque and Tartar Build-up" loading="lazy">
+            <span class="severity-chip severity-low">Preventable</span>
+          </div>
+          <div class="disease-body">
+            <h3>Dental Plaque &amp; Tartar</h3>
+            <p>Plaque is a sticky bacterial film that forms on teeth daily. When not removed, it hardens into tartar — a major contributor to both cavities and gum disease.</p>
+            <div class="symptom-chips">
+              <span class="symptom-chip">Yellow Build-up</span>
+              <span class="symptom-chip">Rough Texture</span>
+              <span class="symptom-chip">Bad Breath</span>
+              <span class="symptom-chip">Gum Irritation</span>
+            </div>
+          </div>
+        </article>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- BOOK CTA STRIP -->
+  <section class="section-sm" style="background:var(--teal);">
+    <div class="container">
+      <div style="display:flex;align-items:center;justify-content:space-between;gap:24px;flex-wrap:wrap;" data-reveal>
+        <div>
+          <h3 style="color:#fff;margin-bottom:6px;">Concerned about any of these conditions?</h3>
+          <p style="color:rgba(255,255,255,.75);margin:0;font-size:0.95rem;">Book a comprehensive oral health check today — most conditions are fully treatable when caught early.</p>
+        </div>
+        <a href="https://wa.me/923395192800?text=Hi%2C%20I%27d%20like%20to%20book%20an%20oral%20health%20check%20at%20Sunny%20Dental%20Surgery." class="btn btn-secondary btn-lg" target="_blank" rel="noopener">
+          <svg viewBox="0 0 24 24" fill="currentColor" style="width:18px;height:18px;"><path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.75.46 3.39 1.26 4.81L2 22l5.42-1.42a9.9 9.9 0 004.62 1.14h.01c5.46 0 9.9-4.45 9.9-9.91C21.96 6.45 17.5 2 12.04 2z"/></svg>
+          Book Check-up Now
+        </a>
+      </div>
+    </div>
+  </section>
+
+</body>
+</html>
