@@ -532,6 +532,7 @@ strong { font-weight: 700; }
   display: flex;
   flex-direction: column;
   gap: 4px;
+  overflow-y: auto;
 }
 .drawer-link {
   display: flex;
@@ -543,10 +544,11 @@ strong { font-weight: 700; }
   font-size: 0.95rem;
   color: rgba(255,255,255,.75);
   transition: var(--t-fast);
+  text-decoration: none;
 }
 .drawer-link:hover { color: #fff; background: rgba(255,255,255,.08); }
 .drawer-link.active { color: var(--gold); background: rgba(242,167,59,.1); }
-.drawer-link svg { width: 18px; height: 18px; opacity: .6; }
+.drawer-link svg { width: 18px; height: 18px; opacity: .6; flex-shrink: 0; }
 .drawer-link.active svg { opacity: 1; color: var(--gold); }
 
 .drawer-footer {
@@ -890,4 +892,3 @@ strong { font-weight: 700; }
   margin-bottom: 24px;
   line-height: 1.5;
 }
-
